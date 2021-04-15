@@ -1,2 +1,5 @@
-rootProject.name = 'TaskTwo'
+rootProject.name = 'gift'
 
+include 'repository'
+include 'service'
+include 'web'

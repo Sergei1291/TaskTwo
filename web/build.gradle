@@ -1,0 +1,28 @@
+plugins {
+    id 'war'
+    id 'java'
+}
+
+group 'com.epam.esm'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(project(':repository'))
+    compile(project(':service'))
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+    compile('org.mockito:mockito-all:1.10.19')
+    compile('org.springframework:spring-context:5.3.0')
+    compile('org.springframework:spring-webmvc:5.3.0')
+    compile('com.fasterxml.jackson.core:jackson-databind:2.12.0')
+    compile('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.0')
+    compile('javax.servlet:javax.servlet-api:3.0.1')
+    compile('org.springframework:spring-context-support:5.3.0')
+    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    compile('org.slf4j:slf4j-api:1.7.30')
+}
