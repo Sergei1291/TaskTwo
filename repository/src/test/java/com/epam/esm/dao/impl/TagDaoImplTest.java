@@ -1,7 +1,6 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.config.RepositoryConfig;
-import com.epam.esm.dao.DaoException;
 import com.epam.esm.entity.identifiable.Tag;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +20,7 @@ public class TagDaoImplTest {
     private TestInnerDatabaseConfig testInnerDatabaseConfig;
 
     @BeforeEach
-    void initialize() throws SQLException {
+    void initialize() {
         ApplicationContext applicationContext =
                 new AnnotationConfigApplicationContext(RepositoryConfig.class);
         JdbcTemplate jdbcTemplate = applicationContext.getBean(JdbcTemplate.class);
@@ -37,7 +35,7 @@ public class TagDaoImplTest {
     }
 
     @Test
-    public void testSaveShouldSaveTagInDatabaseAndReturnCreatedId() throws DaoException {
+    public void testSaveShouldSaveTagInDatabaseAndReturnCreatedId() {
         Tag tag = new Tag("newTag");
         Integer actualId = tagDaoImpl.save(tag);
         Assertions.assertEquals(Integer.valueOf(4), actualId);
@@ -46,7 +44,7 @@ public class TagDaoImplTest {
     }
 
     @Test
-    public void testUpdateShouldTrowUnsupportedOperationException() throws DaoException {
+    public void testUpdateShouldThrowUnsupportedOperationException() {
         Tag tag = new Tag(1, "asa");
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
             tagDaoImpl.update(tag);
@@ -54,8 +52,8 @@ public class TagDaoImplTest {
     }
 
     @Test
-    public void testRemoveShouldRemoveTagFromDatabase() throws DaoException {
-        Tag tag = new Tag(2, "bsb");
+    public void testRemoveShouldRemoveTagFromDatabase() {
+        Tag tag = new Tag(2, null);
         tagDaoImpl.remove(tag);
         List<Tag> tagList = tagDaoImpl.findAll();
         int sizeTagList = tagList.size();
@@ -63,7 +61,7 @@ public class TagDaoImplTest {
     }
 
     @Test
-    public void testFindAllShouldReturnDatabaseListTag() throws DaoException {
+    public void testFindAllShouldReturnDatabaseListTag() {
         List<Tag> tagList = tagDaoImpl.findAll();
         List<Tag> expected = Arrays.asList(
                 new Tag(1, "asa"),
@@ -73,31 +71,31 @@ public class TagDaoImplTest {
     }
 
     @Test
-    public void testFindByIdShouldReturnOptionalTagWhenDatabaseContainTagId() throws DaoException {
+    public void testFindByIdShouldReturnOptionalTagWhenDatabaseContainTagId() {
         Optional<Tag> optionalTag = tagDaoImpl.findById(2);
         Assertions.assertEquals(Optional.of(new Tag(2, "bsb")), optionalTag);
     }
 
     @Test
-    public void testFindByIdShouldReturnOptionalEmptyWhenDatabaseNotContainTagId() throws DaoException {
+    public void testFindByIdShouldReturnOptionalEmptyWhenDatabaseNotContainTagId() {
         Optional<Tag> optionalTag = tagDaoImpl.findById(4);
         Assertions.assertEquals(Optional.empty(), optionalTag);
     }
 
     @Test
-    public void testFindByNameShouldReturnOptionalTagWhenDatabaseContainTagName() throws DaoException {
+    public void testFindByNameShouldReturnOptionalTagWhenDatabaseContainTagName() {
         Optional<Tag> actual = tagDaoImpl.findByName("asa");
         Assertions.assertEquals(Optional.of(new Tag(1, "asa")), actual);
     }
 
     @Test
-    public void testFindByNameShouldReturnOptionalEmptyWhenDatabaseNotContainTagName() throws DaoException {
+    public void testFindByNameShouldReturnOptionalEmptyWhenDatabaseNotContainTagName() {
         Optional<Tag> actual = tagDaoImpl.findByName("not have name");
         Assertions.assertEquals(Optional.empty(), actual);
     }
 
     @Test
-    public void testFindAllByCertificateShouldReturnListTagForCertificate() throws DaoException {
+    public void testFindAllByCertificateShouldReturnListTagForCertificate() {
         List<Tag> actual = tagDaoImpl.findAllByCertificate(4);
         List<Tag> expected = Arrays.asList(
                 new Tag(1, "asa"),

@@ -1,6 +1,5 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.dao.DaoException;
 import com.epam.esm.dao.api.AbstractDao;
 import com.epam.esm.dao.api.TagDao;
 import com.epam.esm.dao.helper.DaoQueryHelperImpl;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class TagDaoImpl extends AbstractDao<Tag> implements TagDao {
 
     private final static String TABLE_NAME = "tag";
-
     private final static String FIND_BY_NAME = "select * from tag where name=?;";
     private final static String FIND_ALL_BY_CERTIFICATE = "select tag.id, tag.name " +
             "from gift_certificate_tag inner join tag on gift_certificate_tag.tag=tag.id " +
@@ -31,12 +29,12 @@ public class TagDaoImpl extends AbstractDao<Tag> implements TagDao {
     }
 
     @Override
-    public void update(Tag identifiable) throws DaoException {
+    public void update(Tag identifiable) {
         throw new UnsupportedOperationException("this operation not supported for tags");
     }
 
     @Override
-    public Optional<Tag> findByName(String name) throws DaoException {
+    public Optional<Tag> findByName(String name) {
         List<Tag> tagList = jdbcTemplate.query(FIND_BY_NAME, rowMapper, name);
         if (tagList.isEmpty()) {
             return Optional.empty();
@@ -46,7 +44,7 @@ public class TagDaoImpl extends AbstractDao<Tag> implements TagDao {
     }
 
     @Override
-    public List<Tag> findAllByCertificate(int certificateId) throws DaoException {
+    public List<Tag> findAllByCertificate(int certificateId) {
         return jdbcTemplate.query(FIND_ALL_BY_CERTIFICATE, rowMapper, certificateId);
     }
 

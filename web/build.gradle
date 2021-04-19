@@ -3,8 +3,12 @@ plugins {
     id 'java'
 }
 
+war {
+    archiveName = 'com.epam.present.war'
+}
+
 group 'com.epam.esm'
-version '1.0-SNAPSHOT'
+version ''
 
 repositories {
     mavenCentral()

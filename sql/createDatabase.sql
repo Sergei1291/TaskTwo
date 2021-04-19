@@ -17,10 +17,10 @@ insert into tag (name) values ('bbb');
 insert into tag (name) values ('ccc');
 
 insert into gift_certificate (name, description, price, duration, create_date) values
-('partName1', 'asdasa sada d asdasd', 10, 2, '2021-03-21T20:52:13.5213'),
-('a2', 'asdasa sada d asdasd', 10, 2, '2021-03-24T00:00:13.5213'),
-('a3', 'asdasa sada d asdasd', 10, 2, '2021-03-25T05:51:13.5213'),
-('a4', 'asdasa sada d asdasd', 10, 2, '2021-03-29T06:52:13.5213');
+('partName1', 'description fff', 10, 2, '2021-03-21T20:52:13.5213'),
+('a2', 'descr two', 10, 2, '2021-03-24T00:00:13.5213'),
+('a3', 'descriptio three', 10, 2, '2021-03-25T05:51:13.5213'),
+('a4', 'desc', 10, 2, '2021-03-29T06:52:13.5213');
 
 insert into gift_certificate_tag (certificate, tag) values
 (1, 1),

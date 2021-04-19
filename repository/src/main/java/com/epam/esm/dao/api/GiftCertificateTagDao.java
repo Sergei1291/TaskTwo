@@ -1,33 +1,35 @@
 package com.epam.esm.dao.api;
 
-import com.epam.esm.dao.DaoException;
-
+/**
+ * The interface extends interface Dao. Interface defines additional methods
+ * for saving and deleting map between GiftCertificate and Tag objects.
+ *
+ * @author Siarhei Katuzhenets
+ * @since 19-04-2021
+ */
 public interface GiftCertificateTagDao {
 
     /**
      * This method is used to save map of id for Certificate and Tag object
-     * to warehouse.
+     * to data source.
      *
-     * @param certificateId
-     * @param tagId
-     * @throws DaoException
+     * @param certificateId This is certificate id.
+     * @param tagId         This is tag's id.
      */
-    void save(int certificateId, int tagId) throws DaoException;
+    void save(int certificateId, int tagId);
 
     /**
      * This method is used to delete map of id for Certificate object.
      *
-     * @param certificateId
-     * @throws DaoException
+     * @param certificateId This is id certificate.
      */
-    void deleteCertificate(int certificateId) throws DaoException;
+    void deleteCertificate(int certificateId);
 
     /**
      * This method is used to delete map of id for Tag object.
      *
-     * @param tagId
-     * @throws DaoException
+     * @param tagId This is id tag.
      */
-    void deleteTag(int tagId) throws DaoException;
+    void deleteTag(int tagId);
 
 }

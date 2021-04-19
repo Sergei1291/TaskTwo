@@ -2,8 +2,6 @@ package com.epam.esm.dao.impl;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.SQLException;
-
 public class TestInnerDatabaseConfig {
 
     private final static String CREATE_TABLE_TAG = "create table if not exists " +
@@ -29,13 +27,13 @@ public class TestInnerDatabaseConfig {
     private final static String DROP_TABLE_GIFT_CERTIFICATE = "drop table gift_certificate;";
     private final static String DROP_TABLE_GIFT_CERTIFICATE_TAG = "drop table gift_certificate_tag;";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     public TestInnerDatabaseConfig(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    void initializeDatabase() throws SQLException {
+    void initializeDatabase() {
         jdbcTemplate.execute(createQueryInitializeDatabase());
     }
 

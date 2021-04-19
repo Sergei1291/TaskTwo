@@ -10,6 +10,8 @@ import java.util.Set;
 
 public class DaoQueryHelperImpl<T extends Identifiable> implements DaoQueryHelper<T> {
 
+    private final static String ID = "id";
+
     private final FieldExtractor<T> fieldExtractor;
 
     public DaoQueryHelperImpl(FieldExtractor<T> fieldExtractor) {
@@ -19,7 +21,7 @@ public class DaoQueryHelperImpl<T extends Identifiable> implements DaoQueryHelpe
     @Override
     public Map<String, Object> createMapNameFieldValue(T identifiable) {
         Map<String, Object> mapNameFiledValue = fieldExtractor.extract(identifiable);
-        mapNameFiledValue.remove("id");
+        mapNameFiledValue.remove(ID);
         return mapNameFiledValue;
     }
 

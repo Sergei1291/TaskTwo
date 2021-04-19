@@ -1,12 +1,16 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.DaoException;
 import com.epam.esm.dao.api.GiftCertificateTagDao;
 import com.epam.esm.dao.api.TagDao;
 import com.epam.esm.dao.impl.GiftCertificateTagDaoImpl;
 import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.entity.identifiable.Tag;
-import com.epam.esm.service.ServiceException;
+import com.epam.esm.exception.tag.TagNameAlreadyExistsException;
+import com.epam.esm.exception.tag.TagNameNotValidException;
+import com.epam.esm.exception.tag.TagNotFoundException;
+import com.epam.esm.service.api.TagService;
+import com.epam.esm.validator.TagValidator;
+import com.epam.esm.validator.TagValidatorImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,65 +27,78 @@ public class TagServiceImplTest {
     private final static List<Tag> TAG_LIST =
             Arrays.asList(new Tag(1, "one"), new Tag(2, "two"));
 
-    private TagDao tagDao = Mockito.mock(TagDaoImpl.class);
-    private GiftCertificateTagDao giftCertificateTagDao = Mockito.mock(GiftCertificateTagDaoImpl.class);
-    private TagServiceImpl tagServiceImpl = new TagServiceImpl(tagDao, giftCertificateTagDao);
+    private final TagDao tagDao = Mockito.mock(TagDaoImpl.class);
+    private final GiftCertificateTagDao giftCertificateTagDao =
+            Mockito.mock(GiftCertificateTagDaoImpl.class);
+    private final TagValidator tagValidator = Mockito.mock(TagValidatorImpl.class);
+    private final TagService tagService =
+            new TagServiceImpl(tagDao, giftCertificateTagDao, tagValidator);
 
     @Test
-    public void testFindByNameShouldReturnOptionalNotEmpty() throws ServiceException, DaoException {
-        when(tagDao.findByName(anyString())).thenReturn(Optional.of(TAG_LIST.get(0)));
-        Optional<Tag> actual = tagServiceImpl.findByName("one");
-        Assertions.assertEquals(Optional.of(new Tag(1, "one")), actual);
-    }
-
-    @Test
-    public void testFindAllByCertificateShouldReturnTagList() throws DaoException, ServiceException {
-        when(tagDao.findAllByCertificate(anyInt())).thenReturn(TAG_LIST);
-        List<Tag> actual = tagServiceImpl.findAllByCertificate(1);
-        Assertions.assertEquals(
-                Arrays.asList(new Tag(1, "one"), new Tag(2, "two")), actual);
-    }
-
-    @Test
-    public void testSaveShouldSaveTagInDatabaseAndReturnSavedTag() throws DaoException, ServiceException {
+    public void testSaveShouldSaveTagToDatabaseAndReturnSavedTag() {
+        when(tagValidator.isValidName(anyObject())).thenReturn(true);
+        when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
         when(tagDao.save(anyObject())).thenReturn(1);
-        when(tagDao.findById(1)).thenReturn(Optional.of(TAG_LIST.get(0)));
-        Tag actual = tagServiceImpl.save(null);
+        when(tagDao.findById(anyInt())).thenReturn(Optional.of(TAG_LIST.get(0)));
+        Tag actual = tagService.save(new Tag(0, ""));
         Assertions.assertEquals(new Tag(1, "one"), actual);
     }
 
     @Test
-    public void testRemoveShouldRemoveTagAndMapFromGiftCertificateTagIfTagFoundedInDataBase()
-            throws ServiceException, DaoException {
+    public void testSaveShouldThrowTagNameNotValidExceptionWhenTagNameNotValid() {
+        when(tagValidator.isValidName(anyObject())).thenReturn(false);
+        Assertions.assertThrows(TagNameNotValidException.class,
+                () -> tagService.save(new Tag(0, "")));
+        verify(tagDao, times(0)).findByName(anyString());
+
+    }
+
+    @Test
+    public void testSaveShouldThrowTagNameAlreadyExistsExceptionWhenDatabaseContainTagName() {
+        when(tagValidator.isValidName(anyObject())).thenReturn(true);
         when(tagDao.findByName(anyString())).thenReturn(Optional.of(new Tag()));
-        boolean actual = tagServiceImpl.remove(new Tag());
-        Assertions.assertTrue(actual);
+        Assertions.assertThrows(TagNameAlreadyExistsException.class,
+                () -> tagService.save(new Tag(0, "")));
+        verify(tagDao, times(0)).save(anyObject());
+        verify(tagDao, times(0)).findById(anyInt());
+    }
+
+    @Test
+    public void testRemoveShouldRemoveTagAndMapFromGiftCertificateTagWhenTagFoundedInDataBase() {
+        when(tagDao.findById(anyInt())).thenReturn(Optional.of(new Tag()));
+        tagService.remove(0);
         verify(tagDao, times(1)).remove(anyObject());
         verify(giftCertificateTagDao, times(1)).deleteTag(anyInt());
     }
 
     @Test
-    public void testRemoveShouldRemoveTagAndMapFromGiftCertificateTagIfTagNotFoundInDataBase()
-            throws ServiceException, DaoException {
-        when(tagDao.findByName(anyString())).thenReturn(Optional.empty());
-        boolean actual = tagServiceImpl.remove(new Tag());
-        Assertions.assertFalse(actual);
+    public void testRemoveShouldThrowTagNotFoundExceptionWhenDatabaseNotContainTagId() {
+        when(tagDao.findById(anyInt())).thenReturn(Optional.empty());
+        Assertions.assertThrows(TagNotFoundException.class,
+                () -> tagService.remove(0));
         verify(tagDao, times(0)).remove(anyObject());
         verify(giftCertificateTagDao, times(0)).deleteTag(anyInt());
     }
 
     @Test
-    public void testFindAllShouldReturnTagList() throws DaoException, ServiceException {
+    public void testFindAllShouldReturnTagList() {
         when(tagDao.findAll()).thenReturn(TAG_LIST);
-        List<Tag> actual = tagServiceImpl.findAll();
+        List<Tag> actual = tagService.findAll();
         Assertions.assertEquals(TAG_LIST, actual);
     }
 
     @Test
-    public void testFindByIdShouldReturnOptionalNotEmpty() throws ServiceException, DaoException {
+    public void testFindByIdShouldReturnTag() {
         when(tagDao.findById(anyInt())).thenReturn(Optional.of(TAG_LIST.get(0)));
-        Optional<Tag> actual = tagServiceImpl.findById(0);
-        Assertions.assertEquals(Optional.of(new Tag(1, "one")), actual);
+        Tag actual = tagService.findById(0);
+        Assertions.assertEquals(new Tag(1, "one"), actual);
+    }
+
+    @Test
+    public void testFindByIdShouldThrowTagNotFoundExceptionWhenDatabaseNotContainTagId() {
+        when(tagDao.findById(anyInt())).thenReturn(Optional.empty());
+        Assertions.assertThrows(TagNotFoundException.class,
+                () -> tagService.findById(anyInt()));
     }
 
 }
