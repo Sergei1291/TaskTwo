@@ -10,35 +10,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/certificates/",
+@RequestMapping(value = "/certificates",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
 
+    private final GiftCertificateDtoService giftCertificateDtoService;
+
     @Autowired
-    private GiftCertificateDtoService giftCertificateDtoService;
+    public GiftCertificateController(GiftCertificateDtoService giftCertificateDtoService) {
+        this.giftCertificateDtoService = giftCertificateDtoService;
+    }
 
     @GetMapping
-    @ResponseBody
     public List<GiftCertificateDto> findAll() {
         return giftCertificateDtoService.findAll();
     }
 
-    @GetMapping(value = "{id}")
-    @ResponseBody
+    @GetMapping(value = "/{id}")
     public GiftCertificateDto findById(@PathVariable int id) {
         return giftCertificateDtoService.findById(id);
     }
 
-    @GetMapping(value = "sort")
-    @ResponseBody
+    @GetMapping(value = "/sort")
     public List<GiftCertificateDto> findAllSortedByParam(@RequestParam String param,
-                                                         @RequestParam boolean orderDesc) {
+                                                         @RequestParam(defaultValue = "false") boolean orderDesc) {
         return giftCertificateDtoService.findAllSortedByParam(param, orderDesc);
     }
 
-    @GetMapping(value = "search")
-    @ResponseBody
+    @GetMapping(value = "/search")
     public List<GiftCertificateDto> searchByParams(
             @RequestParam(required = false) String tagName,
             @RequestParam(required = false) String part,
@@ -51,20 +51,18 @@ public class GiftCertificateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
     public GiftCertificateDto save(@RequestBody GiftCertificateDto giftCertificateDto) {
         return giftCertificateDtoService.save(giftCertificateDto);
     }
 
-    @PutMapping("{id}")
-    @ResponseBody
+    @PutMapping("/{id}")
     public GiftCertificateDto update(@PathVariable int id,
                                      @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateDto.setId(id);
         return giftCertificateDtoService.update(giftCertificateDto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable int id) {
         giftCertificateDtoService.remove(id);

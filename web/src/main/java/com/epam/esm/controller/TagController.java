@@ -10,34 +10,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/tags/",
+@RequestMapping(value = "/tags",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
+    private final TagService tagService;
+
     @Autowired
-    private TagService tagService;
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping
-    @ResponseBody
     public List<Tag> findAll() {
         return tagService.findAll();
     }
 
-    @GetMapping("{id}")
-    @ResponseBody
+    @GetMapping("/{id}")
     public Tag findById(@PathVariable int id) {
         return tagService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
     public Tag save(@RequestBody Tag tag) {
         return tagService.save(tag);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable int id) {
         tagService.remove(id);
