@@ -1,0 +1,15 @@
+<configuration>
+    <property file="src\main\resources\system_config.properties" />
+    <appender name="FILE-MODULE" class="ch.qos.logback.core.FileAppender">
+        <file>${sys:catalina.home}\logs\certificate.log</file>
+        <encoder>
+            <pattern>
+                %date %level [%thread] %logger{10} [%file:%line] %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <logger name="module" level="error" additivity="false">
+        <appender-ref ref="FILE-MODULE" />
+    </logger>
+</configuration>
